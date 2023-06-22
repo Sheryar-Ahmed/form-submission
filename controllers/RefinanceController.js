@@ -1,6 +1,5 @@
 const validator = require("email-validator");
 const puppeteer = require('puppeteer');
-const which = require('which');
 
 const refinanceController = async (req, res) => {
     const {
@@ -26,20 +25,19 @@ const refinanceController = async (req, res) => {
         purchasing_year
     } = req.body;
 
-    try {
-        var chromePath = which.sync('google-chrome');
-        console.log('Chrome executable path:', chromePath);
-    } catch (error) {
-        console.error('Error finding Chrome executable:', error);
-    }
-
     if (validator.validate(email)) {
 
         (async () => {
-            const browser = await puppeteer.launch({
-                executablePath: chromePath, // Specify the path to the Chrome executable
-                headless: true
-            });
+            const firefoxOptions = {
+                product: 'firefox',
+                extraPrefsFirefox: {
+                  // Enable additional Firefox logging from its protocol implementation
+                  // 'remote.log.level': 'Trace',
+                },
+                // Make browser logs visible
+                dumpio: true,
+              };
+            const browser = await puppeteer.launch(firefoxOptions);
             const page = await browser.newPage();
             // Navigate to the webpage containing the form
             await page.goto('https://api.clixlo.com/widget/form/d8K0IpsJGdtuVyErO1TR', { waitUntil: 'domcontentloaded' });
