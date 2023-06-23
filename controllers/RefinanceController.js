@@ -1,5 +1,6 @@
 const validator = require("email-validator");
-const { chromium } = require("playwright");
+const chromium = require('chrome-aws-lambda');
+const puppeteer = require('puppeteer-core');
 
 const refinanceController = async (req, res) => {
   const {
@@ -27,9 +28,15 @@ const refinanceController = async (req, res) => {
 
   if (validator.validate(email)) {
     try {
-    const browser = await chromium.launch({ headless: false });
-      const context = await browser.newContext();
-      const page = await context.newPage();
+      const executablePath = await chromium.executablePath;
+      const browser = await puppeteer.launch({
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath,
+        headless: chromium.headless,
+      });
+
+      const page = await browser.newPage();
 
       await page.goto('https://api.clixlo.com/widget/form/d8K0IpsJGdtuVyErO1TR');
       
