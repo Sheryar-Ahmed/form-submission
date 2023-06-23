@@ -1,91 +1,93 @@
 const validator = require("email-validator");
-const puppeteer = require('puppeteer');
+const axios = require("axios");
+const { JSDOM } = require("jsdom");
 
 const refinanceController = async (req, res) => {
-    const {
-        full_name,
-        phone,
-        email,
-        transaction,
-        property_type,
-        credit_score,
-        property_usage,
-        home_value,
-        rate_type,
-        total_annual_income,
-        employement_status,
-        bankruptcy,
-        income_proof,
-        zipCode,
-        mortgage,
-        interest_rate,
-        second_mortgage,
-        add_cash,
-        fha_loan,
-        purchasing_year
-    } = req.body;
+  const {
+    full_name,
+    phone,
+    email,
+    transaction,
+    property_type,
+    credit_score,
+    property_usage,
+    home_value,
+    rate_type,
+    total_annual_income,
+    employement_status,
+    bankruptcy,
+    income_proof,
+    zipCode,
+    mortgage,
+    interest_rate,
+    second_mortgage,
+    add_cash,
+    fha_loan,
+    purchasing_year
+  } = req.body;
 
-    if (validator.validate(email)) {
+  if (validator.validate(email)) {
+    try {
+      // Create a virtual DOM using JSDOM
+      const dom = new JSDOM();
+      const { document } = dom.window;
 
-        (async () => {
-            const firefoxOptions = {
-                product: 'firefox',
-                extraPrefsFirefox: {
-                  // Enable additional Firefox logging from its protocol implementation
-                  // 'remote.log.level': 'Trace',
-                },
-                // Make browser logs visible
-                dumpio: true,
-              };
-            const browser = await puppeteer.launch(firefoxOptions);
-            const page = await browser.newPage();
-            // Navigate to the webpage containing the form
-            await page.goto('https://api.clixlo.com/widget/form/d8K0IpsJGdtuVyErO1TR', { waitUntil: 'domcontentloaded' });
-            // Fill in the form fields as Needed
-            await page.type('input[name="full_name"]', String(full_name));
-            await page.type('input[name="phone"]', String(phone));
-            await page.type('input[name="email"]', String(email));
-            await page.type('input[name="qpMmLQm5DIOG2Ux7PcnB"]', String(transaction));
-            await page.type('input[name="CmdqKuXjIQUNz0Ef1B7J"]', String(property_type));
-            await page.type('input[name="torHEECUN1qlAyUsipKu"]', String(credit_score));
-            await page.type('input[name="eMy2OcvQcUN0rTNq22Zx"]', String(property_usage));
-            await page.type('input[name="KW1REyBPr6aJAnGnv0Yu"]', String(home_value));
-            await page.type('input[name="OSJ3HwhimgAP0jOAmFz6"]', String(rate_type));
-            await page.type('input[name="3smlXpSpopER87L2V9rQ"]', String(total_annual_income));
-            await page.type('input[name="aLgVGNkHkz9xE9wbmXVH"]', String(employement_status));
-            await page.type('input[name="MJO6lINsXTRE2Mne6awc"]', String(bankruptcy));
-            await page.type('input[name="DZ9qywLxPY1n7Nff5HnI"]', String(income_proof));
-            await page.type('input[name="hNn06S0mTBWBv4b5xE0N"]', String(zipCode));
-            await page.type('input[name="ke9jHqOsNFGrL7xMIwqd"]', String(mortgage));
-            await page.type('input[name="liwo67H5BHQhwzQ6Cr4c"]', String(interest_rate));
-            await page.type('input[name="iS3XKEg0Hhi8W4amOw9s"]', String(second_mortgage));
-            await page.type('input[name="L6lMyRr7u3GFlq1CQU20"]', String(add_cash));
-            await page.type('input[name="kAZsP7vDGqXjewCYV7OB"]', String(fha_loan));
-            await page.type('input[name="PixfrmVegThu1SMyAohb"]', String(purchasing_year));
-            // Submit the form
-            // Wait for the button to become visible and clickable
-            await page.waitForSelector('button');
+      // Simulate asynchronous operation with setTimeout
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-            // Click on the button
-            await page.click('button');
+      // Simulate form submission by creating form elements and setting their values
+      const form = document.createElement("form");
+      form.action = "https://api.clixlo.com/widget/form/d8K0IpsJGdtuVyErO1TR";
+      form.method = "POST";
 
-            // Wait for navigation to complete
-            await page.waitForNavigation();
+      const createAndSetInputValue = (name, value) => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+      };
 
-            // Close the browser
-            await browser.close();
-            res.status(200).json({
-                message: "Form Submitted Successfully."
-            });
+      createAndSetInputValue("full_name", full_name);
+      createAndSetInputValue("phone", phone);
+      createAndSetInputValue("email", email);
+      createAndSetInputValue("qpMmLQm5DIOG2Ux7PcnB", transaction);
+      createAndSetInputValue("CmdqKuXjIQUNz0Ef1B7J", property_type);
+      createAndSetInputValue("torHEECUN1qlAyUsipKu", credit_score);
+      createAndSetInputValue("eMy2OcvQcUN0rTNq22Zx", property_usage);
+      createAndSetInputValue("KW1REyBPr6aJAnGnv0Yu", home_value);
+      createAndSetInputValue("OSJ3HwhimgAP0jOAmFz6", rate_type);
+      createAndSetInputValue("3smlXpSpopER87L2V9rQ", total_annual_income);
+      createAndSetInputValue("aLgVGNkHkz9xE9wbmXVH", employement_status);
+      createAndSetInputValue("MJO6lINsXTRE2Mne6awc", bankruptcy);
+      createAndSetInputValue("DZ9qywLxPY1n7Nff5HnI", income_proof);
+      createAndSetInputValue("hNn06S0mTBWBv4b5xE0N", zipCode);
+      createAndSetInputValue("ke9jHqOsNFGrL7xMIwqd", mortgage);
+      createAndSetInputValue("liwo67H5BHQhwzQ6Cr4c", interest_rate);
+      createAndSetInputValue("iS3XKEg0Hhi8W4amOw9s", second_mortgage);
+      createAndSetInputValue("L6lMyRr7u3GFlq1CQU20", add_cash);
+      createAndSetInputValue("kAZsP7vDGqXjewCYV7OB", fha_loan);
+      createAndSetInputValue("PixfrmVegThu1SMyAohb", purchasing_year);
 
+      // Append the form to the document and submit it
+      document.body.appendChild(form);
 
-        })();
-    } else {
-        res.status(422).json({
-            message: "InValid Email."
+      // Simulate a response after form submission
+      setTimeout(() => {
+        res.status(200).json({
+          message: "Form Submitted Successfully."
         });
+      }, 1000); // Simulating a 1-second delay before the response
+    } catch (error) {
+      res.status(500).json({
+        message: "Error occurred during form submission."
+      });
     }
+  } else {
+    res.status(422).json({
+      message: "Invalid Email."
+    });
+  }
 };
-
 
 module.exports = { refinanceController };
