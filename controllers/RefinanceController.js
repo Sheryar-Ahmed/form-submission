@@ -4,12 +4,12 @@ const chromium = require("chrome-aws-lambda");
 
 const checkBrowserAvailability = async () => {
     try {
-      const browser = await playwright.chromium.launch({
-        args: chromium.args,
-        executablePath: '/usr/bin/chromium-browser', // Provide the path to the Chromium executable on your server
-        downloadsPath: "/tmp/downloads",
-        ignoreDefaultArgs: ["--disable-extensions"],
-      });
+        const browser = await chromium.puppeteer.launch({
+            args: chromium.args,
+            defaultViewport: chromium.defaultViewport,
+            executablePath: await chromium.executablePath,
+            headless: chromium.headless,
+          });          
   
       console.log("Browser is available");
       await browser.close();
@@ -47,12 +47,8 @@ const checkBrowserAvailability = async () => {
       try {
         await checkBrowserAvailability();
   
-        const browser = await playwright.chromium.launch({
-          executablePath: '/usr/bin/chromium-browser', // Provide the path to the Chromium executable on your server
-          args: chromium.args,
-          downloadsPath: "/tmp/downloads",
-          ignoreDefaultArgs: ["--disable-extensions"],
-        });
+        const browser = await playwright.chromium.launch();
+
   
         const context = await browser.newContext();
         const page = await context.newPage();
