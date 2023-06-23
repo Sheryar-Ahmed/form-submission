@@ -1,5 +1,5 @@
 const validator = require("email-validator");
-const { firefox } = require("playwright");
+const { chromium } = require("playwright");
 
 const refinanceController = async (req, res) => {
   const {
@@ -27,7 +27,8 @@ const refinanceController = async (req, res) => {
 
   if (validator.validate(email)) {
     try {
-      const browser = await firefox.launch({ headless: true });
+    const browser = await chromium.launch({ headless: false });
+      console.log("browser", browser);
       const context = await browser.newContext();
       const page = await context.newPage();
 
