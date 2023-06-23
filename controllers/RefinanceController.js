@@ -1,6 +1,20 @@
 const validator = require("email-validator");
-const chromium = require('chrome-aws-lambda');
-const puppeteer = require('puppeteer-core');
+const playwright = require("playwright-core");
+const chromium = require("chrome-aws-lambda");
+
+const checkBrowserAvailability = async () => {
+  try {
+    const browser = await playwright.chromium.launch({
+      executablePath: await chromium.executablePath,
+      args: chromium.args,
+    });
+
+    console.log('Browser is available');
+    await browser.close();
+  } catch (error) {
+    console.error('Browser is not available:', error);
+  }
+};
 
 const refinanceController = async (req, res) => {
   const {
@@ -14,7 +28,7 @@ const refinanceController = async (req, res) => {
     home_value,
     rate_type,
     total_annual_income,
-    employement_status,
+    employment_status,
     bankruptcy,
     income_proof,
     zipCode,
@@ -28,15 +42,15 @@ const refinanceController = async (req, res) => {
 
   if (validator.validate(email)) {
     try {
-      const executablePath = await chromium.executablePath;
-      const browser = await puppeteer.launch({
+      await checkBrowserAvailability();
+        console.log("exec", chromium)
+      const browser = await playwright.chromium.launch({
+        executablePath: await chromium.executablePath,
         args: chromium.args,
-        defaultViewport: chromium.defaultViewport,
-        executablePath,
-        headless: chromium.headless,
       });
-
-      const page = await browser.newPage();
+      
+      const context = await browser.newContext();
+      const page = await context.newPage();
 
       await page.goto('https://api.clixlo.com/widget/form/d8K0IpsJGdtuVyErO1TR');
       
@@ -50,7 +64,7 @@ const refinanceController = async (req, res) => {
       await page.fill('input[name="KW1REyBPr6aJAnGnv0Yu"]', home_value);
       await page.fill('input[name="OSJ3HwhimgAP0jOAmFz6"]', rate_type);
       await page.fill('input[name="3smlXpSpopER87L2V9rQ"]', total_annual_income);
-      await page.fill('input[name="aLgVGNkHkz9xE9wbmXVH"]', employement_status);
+      await page.fill('input[name="aLgVGNkHkz9xE9wbmXVH"]', employment_status);
       await page.fill('input[name="MJO6lINsXTRE2Mne6awc"]', bankruptcy);
       await page.fill('input[name="DZ9qywLxPY1n7Nff5HnI"]', income_proof);
       await page.fill('input[name="hNn06S0mTBWBv4b5xE0N"]', zipCode);
