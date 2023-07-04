@@ -27,7 +27,7 @@ const refinanceController = async (req, res) => {
 
   if (validator.validate(email)) {
     try {
-      const browser = await firefox.launch();
+      const browser = await firefox.launch({headless: false});
       const context = await browser.newContext();
       const page = await context.newPage();
 
@@ -54,7 +54,7 @@ const refinanceController = async (req, res) => {
       await page.fill('input[name="L6lMyRr7u3GFlq1CQU20"]', addCashValue.toString());
       await page.fill('input[name="kAZsP7vDGqXjewCYV7OB"]', fha_loan);
       await page.fill('input[name="PixfrmVegThu1SMyAohb"]', purchasing_year);
-
+      await page.waitForSelector('button');
       await page.click('button[type="submit"]');
       await page.waitForNavigation();
 
