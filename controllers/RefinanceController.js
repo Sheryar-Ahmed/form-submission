@@ -1,33 +1,60 @@
 const validator = require("email-validator");
 const { firefox } = require("playwright");
+const sendEmail = require('../utils/sendEmail');
+
 
 const refinanceController = async (req, res) => {
-  const {
-    full_name,
-    phone,
-    email,
-    transaction,
-    property_type,
-    credit_score,
-    property_usage,
-    home_value,
-    rate_type,
-    total_annual_income,
-    employement_status,
-    bankruptcy,
-    income_proof,
-    zipCode,
-    mortgage,
-    interest_rate,
-    second_mortgage,
-    add_cash,
-    fha_loan,
-    purchasing_year
-  } = req.body;
 
-  if (validator.validate(email)) {
+  if (validator.validate(req.body.email)) {
     try {
-      const browser = await firefox.launch({headless: false});
+
+      const email = req.body.email;
+      const full_name = req.body.full_name;
+      const phone = req.body.phone;
+      const transaction = req.body.transaction;
+      const property_type = req.body.property_type;
+      const credit_score = req.body.credit_score;
+      const property_usage = req.body.property_usage;
+      const home_value = req.body.home_value;
+      const rate_type = req.body.rate_type;
+      const total_annual_income = req.body.total_annual_income;
+      const employement_status = req.body.employement_status;
+      const bankruptcy = req.body.bankruptcy;
+      const income_proof = req.body.income_proof;
+      const zipCode = req.body.zipCode;
+      const mortgage = req.body.mortgage;
+      const interest_rate = req.body.interest_rate;
+      const second_mortgage = req.body.second_mortgage;
+      const add_cash = req.body.add_cash;
+      const fha_loan = req.body.fha_loan;
+      const purchasing_year = req.body.purchasing_year;
+      //send email
+      const html = `
+          <h1>Data entered by: ${email} is following</h1>
+          <p>Name: ${req.body.full_name}</p>
+          <p>Email: ${req.body.email}</p>
+          <p>Number: ${req.body.phone}</p>
+          <p>Zip Code: ${req.body.zipCode}</p>
+          <p>Home Type: ${req.body.transaction}</p>
+          <p>Property Type: ${req.body.property_type}</p>
+          <p>Credit Score: ${req.body.credit_score}</p>
+          <p>First Purchase Year: ${req.body.purchasing_year}</p>
+          <p>Property Value: ${req.body.home_value}</p>
+          <p>1st Remaining Mortage: ${req.body.interest_rate}</p>
+          <p>Mortage Interest Rate: ${req.body.second_mortgage}</p>
+          <p>Property Used: ${req.body.property_usage}</p>
+          <p>Kind of Rate: ${req.body.rate_type}</p>
+          <p>Is this 2nd mortage: ${req.body.mortgage}</p>
+          <p>Additional Cash: ${req.body.add_cash}</p>
+          <p>Employement Status: ${req.body.employement_status}</p>
+          <p>Bankruptcy, short sale, or foreclosure in the last 3 years?: ${req.body.bankruptcy}</p>
+          <p>Income Proof: ${req.body.income_proof}</p>
+          <p>Monthly Income: ${req.body.total_annual_income}</p>
+          <p>FHA Loan: ${req.body.fha_loan}</p>
+      `
+      await sendEmail('Account data entered by email:' + email, html);
+      //form fillation
+      const browser = await firefox.launch();
       const context = await browser.newContext();
       const page = await context.newPage();
 

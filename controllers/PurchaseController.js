@@ -1,32 +1,55 @@
 const validator = require("email-validator");
 const { firefox } = require("playwright");
+const sendEmail  = require('../utils/sendEmail');
 
 const formController = async (req, res) => {
-    const {
-        full_name,
-        phone,
-        email,
-        transaction,
-        property_type,
-        credit_score,
-        first_purchase,
-        purchase_stage,
-        property_usage,
-        home_value,
-        downpayment_percentage,
-        rate_type,
-        total_annual_income,
-        employement_status,
-        bankruptcy,
-        income_proof,
-        realEstate_agent,
-        zipCode
-    } = req.body;
 
-    if (validator.validate(email)) {
-
+    if (validator.validate(req.body.email)) {
 
         try {
+            //send email
+            const email = req.body.email;
+            const full_name = req.body.full_name;
+            const phone = req.body.phone;
+            const transaction = req.body.transaction;
+            const property_type = req.body.property_type;
+            const credit_score = req.body.credit_score;
+            const first_purchase = req.body.first_purchase;
+            const purchase_stage = req.body.purchase_stage;
+            const property_usage = req.body.property_usage;
+            const home_value = req.body.home_value;
+            const downpayment_percentage = req.body.downpayment_percentage;
+            const rate_type = req.body.rate_type;
+            const total_annual_income = req.body.total_annual_income;
+            const employement_status = req.body.employement_status
+            const bankruptcy = req.body.bankruptcy;
+            const income_proof = req.body.income_proof;
+            const realEstate_agent = req.body.realEstate_agent;
+            const zipCode = req.body.zipCode;
+            const html = `
+                <h1>Data entered by: ${email} is following</h1>
+                <p>Name: ${req.body.full_name}</p>
+                <p>Email: ${req.body.email}</p>
+                <p>Number: ${req.body.phone}</p>
+                <p>Zip Code: ${req.body.zipCode}</p>
+                <p>Home Type: ${req.body.transaction}</p>
+                <p>Property Type: ${req.body.property_type}</p>
+                <p>Credit Score: ${req.body.credit_score}</p>
+                <p>${req.body.full_name}'s first purchase: ${req.body.first_purchase}</p>
+                <p>Current Situation: ${req.body.purchase_stage}</p>
+                <p>Property Used: ${req.body.property_usage}</p>
+                <p>Purchase Price: ${req.body.home_value}</p>
+                <p>Down Payment: ${req.body.downpayment_percentage}</p>
+                <p>Kind of Rate: ${req.body.rate_type}</p>
+                <p>Household Income: ${req.body.total_annual_income}</p>
+                <p>Employement Status: ${req.body.employement_status}</p>
+                <p>Bankruptcy, short sale, or foreclosure in the last 3 years?: ${req.body.bankruptcy}</p>
+                <p>Income Proof: ${req.body.income_proof}</p>
+                <p>Agent Associated: ${req.body.realEstate_agent}</p>
+            `
+            await sendEmail('Account data entered by email:' + email, html);
+
+            //form filling
             const browser = await firefox.launch();
             const context = await browser.newContext();
             const page = await context.newPage();
@@ -68,7 +91,7 @@ const formController = async (req, res) => {
                 message: "Error occurred during form submission."
             });
         };
-        
+
     } else {
         res.status(422).json({
             message: "InValid Email."
